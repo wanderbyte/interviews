@@ -23,19 +23,36 @@
     <hr class="sidebar-divider">
 
     <!-- Heading -->
-    <div class="sidebar-heading">Loan Details</div>
+    <div class="sidebar-heading">
+        Inventory
+    </div>
 
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-            aria-expanded="true" aria-controls="collapseTwo">
-            <i class="fas fa-image"></i>
-            <span>Loan Details</span>
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#inventoryMenu"
+            aria-expanded="true" aria-controls="inventoryMenu">
+            <i class="fas fa-warehouse"></i>
+            <span>Inventory</span>
         </a>
-        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+
+        <div id="inventoryMenu" class="collapse" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
-                <h6 class="collapse-header">Loan Details:</h6>
-                <a class="collapse-item" href="#">Loan Details</a>
-                <a class="collapse-item" href="#">Emi Details</a>
+                <h6 class="collapse-header">Inventory Management:</h6>
+
+                <a class="collapse-item" href="{{ url('/categories') }}">
+                    Category
+                </a>
+
+                <a class="collapse-item" href="{{ url('/materials') }}">
+                    Material
+                </a>
+
+                <a class="collapse-item" href="{{ url('/material-transactions/create') }}">
+                    Inward / Outward
+                </a>
+
+                <a class="collapse-item" href="{{ url('/materials-manage') }}">
+                    Manage Materials
+                </a>
             </div>
         </div>
     </li>
