@@ -71,7 +71,7 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label>Category Name <span class="text-danger">*</span></label>
-                            <input type="text" id="name" class="form-control">
+                            <input type="text" id="category_name" class="form-control">
                             <span class="text-danger error-name"></span>
                         </div>
                     </div>
@@ -115,9 +115,16 @@
     <script>
         $(document).ready(function() {
 
+            $('#categoryModal').on('hidden.bs.modal', function() {
+                $('#categoryForm')[0].reset();
+                $('#category_id').val('');
+                $('.error-name').text('');
+                $('.modal-title').text('Add Category');
+            });
+
             $('.editBtn').click(function() {
                 $('#category_id').val($(this).data('id'));
-                $('#name').val($(this).data('name'));
+                $('#category_name').val($(this).data('name'));
                 $('.modal-title').text('Edit Category');
                 $('#categoryModal').modal('show');
             });
@@ -131,7 +138,7 @@
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content'),
                         id: $('#category_id').val(),
-                        name: $('#name').val()
+                        category_name: $('#category_name').val()
                     },
                     success: function(res) {
                         $('#categoryModal').modal('hide');

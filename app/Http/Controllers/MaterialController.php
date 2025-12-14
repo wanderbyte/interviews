@@ -24,7 +24,7 @@ class MaterialController extends Controller
             'id'              => 'nullable|exists:materials,id',
             'category_id'     => 'required|exists:categories,id',
             'material_name'   => 'required|string',
-            'opening_balance' => 'required|numeric'
+            'opening_balance' => ['required', 'numeric', 'regex:/^\d+(\.\d{1,2})?$/']
         ]);
 
         // UPDATE

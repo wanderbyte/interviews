@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
@@ -19,13 +18,13 @@ class CategoryController extends Controller
     {
         // Validate request data
         $validated = $request->validate([
-            'name' => 'required|string',
-            'id'   => 'nullable|exists:categories,id'
+            'category_name' => 'required|string',
+            'id' => 'nullable|exists:categories,id'
         ]);
 
         if (!empty($validated['id'])) {
             $category = Category::find($validated['id']);
-            $category->category_name = $validated['name'];
+            $category->category_name = $validated['category_name'];
             $category->save();
         } else {
             $category = Category::create([

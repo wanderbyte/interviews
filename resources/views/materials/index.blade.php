@@ -40,7 +40,8 @@
                                     <td>{{ $material->created_at->format('d M Y') }}</td>
                                     <td>
                                         <button class="btn btn-info editBtn" data-id="{{ $material->id }}"
-                                            data-name="{{ $material->material_name }}" data-category="{{ $material->category_id }}"
+                                            data-name="{{ $material->material_name }}"
+                                            data-category="{{ $material->category_id }}"
                                             data-balance="{{ $material->opening_balance }}">
                                             <i class="fas fa-edit"></i>
                                         </button>
@@ -140,6 +141,25 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
+
+            $('#materialModal').on('hidden.bs.modal', function() {
+                const modal = $(this);
+                modal.find('form')[0].reset();
+                modal.find('#material_id').val('');
+                modal.find('.text-danger').text('');
+                modal.find('.modal-title').text('Add Material');
+            });
+
+            $('#opening_balance').on('input', function() {
+                let value = $(this).val();
+
+                if (value.includes('.')) {
+                    let parts = value.split('.');
+                    if (parts[1].length > 2) {
+                        $(this).val(parts[0] + '.' + parts[1].slice(0, 2));
+                    }
+                }
+            });
 
             $('.editBtn').click(function() {
                 $('#material_id').val($(this).data('id'));
