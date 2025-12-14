@@ -13,66 +13,81 @@
         <!-- Content Row -->
         <div class="row">
             <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-left-warning shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Category</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">10</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-sitemap fa-2x text-gray-300"></i>
+                <a href="{{ url('/categories') }}" class="text-decoration-none">
+                    <div class="card border-left-warning shadow h-100 py-2 card-hover">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Categories
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        {{ $categoryCount }}
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-sitemap fa-2x text-gray-300"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
 
-            <!-- Category -->
             <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-left-primary shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Materials</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800">10</div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-boxes fa-2x text-gray-300"></i>
+                <a href="{{ url('/materials') }}" class="text-decoration-none">
+                    <div class="card border-left-primary shadow h-100 py-2 card-hover">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Materials
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        {{ $materialCount }}
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-boxes fa-2x text-gray-300"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
 
-            <!-- Products -->
             <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-left-success shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="row no-gutters align-items-center">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Products</div>
-                                <div class="h5 mb-0 font-weight-bold text-gray-800"></div>
-                            </div>
-                            <div class="col-auto">
-                                <i class="fas fa-box-open fa-2x text-gray-300"></i>
+                <a href="{{ url('/material-transactions') }}" class="text-decoration-none">
+                    <div class="card border-left-success shadow h-100 py-2 card-hover">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Inward / Outward
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        {{ $transactionCount }}
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-box-open fa-2x text-gray-300"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
 
-            <!-- Order -->
             <div class="col-xl-3 col-md-6 mb-4">
                 <div class="card border-left-info shadow h-100 py-2">
                     <div class="card-body">
                         <div class="row no-gutters align-items-center">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Order</div>
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col-auto">
-                                        <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800"></div>
-                                    </div>
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    Order
+                                </div>
+                                <div class="h6 font-weight-bold text-muted">
+                                    Coming Soon
                                 </div>
                             </div>
                             <div class="col-auto">
