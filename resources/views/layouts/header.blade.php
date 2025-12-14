@@ -30,7 +30,7 @@
 
         {{-- Home page --}}
         <li class="nav-item dropdown no-arrow mx-1">
-            <a class="nav-link dropdown-toggle" href="#" target="_blank" data-toggle="tooltip" data-placement="bottom" title="home" role="button">
+            <a class="nav-link dropdown-toggle" href="{{ route('dashboard') }}" target="_blank" data-toggle="tooltip" data-placement="bottom" title="home" role="button">
                 <i class="fas fa-home fa-fw"></i>
             </a>
         </li>

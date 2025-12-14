@@ -47,9 +47,6 @@
 <script src="{{ asset('js/custom.js') }}"></script>
 
 <!-- Page level plugins -->
-<script src="{{ asset('js/chart.js/Chart.min.js') }}"></script>
-
-<!-- Page level plugins -->
 <script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('js/dataTables.bootstrap4.min.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
