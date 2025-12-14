@@ -8,18 +8,16 @@
         <div class="sidebar-brand-text mx-3">Admin</div>
     </a>
 
-    <!-- Divider -->
     <hr class="sidebar-divider my-0">
 
-    <!-- Nav Item - Dashboard -->
-    <li class="nav-item active">
+    <!-- Dashboard -->
+    <li class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('dashboard') }}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
             <span>Dashboard</span>
         </a>
     </li>
 
-    <!-- Divider -->
     <hr class="sidebar-divider">
 
     <!-- Heading -->
@@ -27,27 +25,37 @@
         Inventory
     </div>
 
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#inventoryMenu"
-            aria-expanded="true" aria-controls="inventoryMenu">
+    @php
+        $inventoryActive =
+            request()->is('categories*') || request()->is('materials*') || request()->is('material-transactions*');
+    @endphp
+
+    <!-- Inventory Menu -->
+    <li class="nav-item {{ $inventoryActive ? 'active' : '' }}">
+        <a class="nav-link {{ $inventoryActive ? '' : 'collapsed' }}" href="#" data-toggle="collapse"
+            data-target="#inventoryMenu" aria-expanded="{{ $inventoryActive ? 'true' : 'false' }}"
+            aria-controls="inventoryMenu">
             <i class="fas fa-warehouse"></i>
             <span>Inventory</span>
         </a>
 
-        <div id="inventoryMenu" class="collapse" data-parent="#accordionSidebar">
+        <div id="inventoryMenu" class="collapse {{ $inventoryActive ? 'show' : '' }}" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Inventory Management:</h6>
 
-                <a class="collapse-item" href="{{ url('/categories') }}">
+                <a class="collapse-item {{ request()->is('categories*') ? 'active' : '' }}"
+                    href="{{ url('/categories') }}">
                     Category
                 </a>
 
-                <a class="collapse-item" href="{{ url('/materials') }}">
+                <a class="collapse-item {{ request()->is('materials*') ? 'active' : '' }}"
+                    href="{{ url('/materials') }}">
                     Material
                 </a>
 
-                <a class="collapse-item" href="{{ url('/material-transactions') }}">
-                    Manage Materials
+                <a class="collapse-item {{ request()->is('material-transactions*') ? 'active' : '' }}"
+                    href="{{ url('/material-transactions') }}">
+                    Manage Inward-Outward
                 </a>
             </div>
         </div>
