@@ -1,153 +1,219 @@
 @extends('layouts.master')
 
 @push('title')
-<title>Material Management | Interview Task</title>
+    <title>Material Management | Interview Task</title>
 @endpush
 
 @section('main-content')
-<div class="container-fluid">
+    <div class="container-fluid">
 
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Material Management</h1>
-        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#materialModal">
-            <i class="fas fa-plus"></i> Add Material
-        </button>
-    </div>
-
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Materials</h6>
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Materials</h1>
+            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#materialModal">
+                <i class="fas fa-plus"></i> Add Material
+            </button>
         </div>
 
-        <div class="card-body">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Category</th>
-                        <th>Material Name</th>
-                        <th>Opening Balance</th>
-                        <th>Created At</th>
-                        <th width="120">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($materials as $key => $material)
-                    <tr id="row-{{ $material->id }}">
-                        <td>{{ $key + 1 }}</td>
-                        <td>{{ $material->category->name }}</td>
-                        <td>{{ $material->name }}</td>
-                        <td>{{ $material->opening_balance }}</td>
-                        <td>{{ $material->created_at->format('d-m-Y') }}</td>
-                        <td>
-                            <button class="btn btn-sm btn-info editBtn"
-                                data-id="{{ $material->id }}"
-                                data-name="{{ $material->name }}"
-                                data-category="{{ $material->category_id }}"
-                                data-balance="{{ $material->opening_balance }}">
-                                <i class="fas fa-edit"></i>
-                            </button>
+        <!-- Material Table -->
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover" id="datatable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Category</th>
+                                <th>Material Name</th>
+                                <th>Opening Balance</th>
+                                <th>Created At</th>
+                                <th width="120">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($materials as $key => $material)
+                                <tr id="row-{{ $material->id }}">
+                                    <td>{{ $key + 1 }}</td>
+                                    <td>{{ $material->category->category_name }}</td>
+                                    <td>{{ $material->material_name }}</td>
+                                    <td>{{ number_format($material->opening_balance, 2) }}</td>
+                                    <td>{{ $material->created_at->format('d M Y') }}</td>
+                                    <td>
+                                        <button class="btn btn-info editBtn" data-id="{{ $material->id }}"
+                                            data-name="{{ $material->material_name }}" data-category="{{ $material->category_id }}"
+                                            data-balance="{{ $material->opening_balance }}">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
 
-                            <button class="btn btn-sm btn-danger deleteBtn"
-                                data-id="{{ $material->id }}">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                                        <button type="button" class="btn btn-danger delete-material"
+                                            data-id="{{ $material->id }}" data-name="{{ $material->material_name }}">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Material Modal -->
+    <div class="modal fade" id="materialModal" tabindex="-1">
+        <div class="modal-dialog">
+            <form id="materialForm">
+                @csrf
+                <input type="hidden" id="material_id">
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add Material</h5>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <div class="form-group">
+                            <label>Category <span class="text-danger">*</span></label>
+                            <select id="category_id" class="form-control">
+                                <option value="">Select Category</option>
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}">
+                                        {{ $category->category_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <span class="text-danger error-category"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Material Name <span class="text-danger">*</span></label>
+                            <input type="text" id="material_name" class="form-control">
+                            <span class="text-danger error-name"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Opening Balance <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" id="opening_balance" class="form-control">
+                            <span class="text-danger error-balance"></span>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 
-</div>
-
-<!-- Material Modal -->
-<div class="modal fade" id="materialModal">
-    <div class="modal-dialog">
-        <form id="materialForm">
-            @csrf
-            <input type="hidden" id="material_id">
-
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
+
                 <div class="modal-header">
-                    <h5 class="modal-title">Add Material</h5>
+                    <h5 class="modal-title">Confirm Deletion</h5>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
 
-                <div class="modal-body">
-
-                    <div class="form-group">
-                        <label>Category *</label>
-                        <select id="category_id" class="form-control">
-                            <option value="">Select</option>
-                            @foreach($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Material Name *</label>
-                        <input type="text" id="name" class="form-control">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Opening Balance *</label>
-                        <input type="number" step="0.01" id="opening_balance" class="form-control">
-                    </div>
-
+                <div class="modal-body text-center">
+                    <i class="fas fa-exclamation-circle fa-4x text-danger mb-3"></i>
+                    <h5 id="deleteMaterialText"></h5>
+                    <p class="text-muted">This action can be reversed (soft delete).</p>
                 </div>
 
                 <div class="modal-footer">
-                    <button class="btn btn-primary">Save</button>
+                    <button class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-danger" id="confirmDelete">Delete</button>
                 </div>
-            </div>
-        </form>
-    </div>
-</div>
 
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
-<script>
-$('#materialForm').submit(function(e){
-    e.preventDefault();
+    <script>
+        $(document).ready(function() {
 
-    let id = $('#material_id').val();
-    let url = id ? `/materials/${id}` : `/materials`;
-    let type = id ? 'PUT' : 'POST';
+            $('.editBtn').click(function() {
+                $('#material_id').val($(this).data('id'));
+                $('#material_name').val($(this).data('name'));
+                $('#category_id').val($(this).data('category'));
+                $('#opening_balance').val($(this).data('balance'));
+                $('.modal-title').text('Edit Material');
+                $('#materialModal').modal('show');
+            });
 
-    $.ajax({
-        url: url,
-        type: type,
-        data: {
-            _token: $('meta[name="csrf-token"]').attr('content'),
-            category_id: $('#category_id').val(),
-            name: $('#name').val(),
-            opening_balance: $('#opening_balance').val()
-        },
-        success: () => location.reload()
-    });
-});
+            $('#materialForm').submit(function(e) {
+                e.preventDefault();
 
-$('.editBtn').click(function(){
-    $('#material_id').val($(this).data('id'));
-    $('#category_id').val($(this).data('category'));
-    $('#name').val($(this).data('name'));
-    $('#opening_balance').val($(this).data('balance'));
-    $('#materialModal').modal('show');
-});
+                $.ajax({
+                    url: '/materials/save',
+                    type: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        id: $('#material_id').val(),
+                        category_id: $('#category_id').val(),
+                        material_name: $('#material_name').val(),
+                        opening_balance: $('#opening_balance').val()
+                    },
+                    success: function(res) {
+                        $('#materialModal').modal('hide');
+                        toastr.success(res.message);
+                        setTimeout(() => location.reload(), 2000);
+                    },
+                    error: function(err) {
+                        toastr.error(err.responseJSON?.message || 'Validation error');
+                    }
+                });
+            });
 
-$('.deleteBtn').click(function(){
-    if(!confirm('Delete this material?')) return;
+            let materialId = null;
+            let materialName = null;
 
-    $.ajax({
-        url: `/materials/${$(this).data('id')}`,
-        type: 'DELETE',
-        data: {_token:$('meta[name="csrf-token"]').attr('content')},
-        success: () => location.reload()
-    });
-});
-</script>
+            $('.delete-material').click(function() {
+                materialId = $(this).data('id');
+                materialName = $(this).data('name');
+
+                $('#deleteMaterialText').html(
+                    `Are you sure you want to delete <strong>${materialName}</strong>?`
+                );
+
+                $('#deleteModal').modal('show');
+            });
+
+            $('#confirmDelete').click(function() {
+
+                let btn = $(this);
+                btn.html('<i class="fas fa-spinner fa-spin"></i> Deleting...')
+                    .prop('disabled', true);
+
+                $.ajax({
+                    type: 'DELETE',
+                    url: `/materials/${materialId}`,
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(res) {
+                        $('#deleteModal').modal('hide');
+                        toastr.success(res.message);
+                        setTimeout(() => location.reload(), 3000);
+                    },
+                    error: function() {
+                        toastr.error('Failed to delete material');
+                    },
+                    complete: function() {
+                        btn.html('Delete').prop('disabled', false);
+                    }
+                });
+            });
+
+        });
+    </script>
 @endpush

@@ -9,7 +9,7 @@
 
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Category Management</h1>
+            <h1 class="h3 mb-0 text-gray-800">Categories</h1>
             <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#categoryModal">
                 <i class="fas fa-plus"></i> Add Category
             </button>
@@ -17,13 +17,9 @@
 
         <!-- Category Table -->
         <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Categories</h6>
-            </div>
-
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered" id="categoryTable">
+                    <table class="table table-bordered table-striped table-hover" id="datatable">
                         <thead>
                             <tr>
                                 <th>#</th>
@@ -36,15 +32,16 @@
                             @foreach ($categories as $key => $category)
                                 <tr id="row-{{ $category->id }}">
                                     <td>{{ $key + 1 }}</td>
-                                    <td class="cat-name">{{ $category->name }}</td>
-                                    <td>{{ $category->created_at->format('d-m-Y') }}</td>
+                                    <td class="cat-name">{{ $category->category_name }}</td>
+                                    <td>{{ $category->created_at->format('d M Y') }}</td>
                                     <td>
-                                        <button class="btn btn-sm btn-info editBtn" data-id="{{ $category->id }}"
-                                            data-name="{{ $category->name }}">
+                                        <button class="btn btn-info editBtn" data-id="{{ $category->id }}"
+                                            data-name="{{ $category->category_name }}">
                                             <i class="fas fa-edit"></i>
                                         </button>
 
-                                        <button class="btn btn-sm btn-danger deleteBtn" data-id="{{ $category->id }}">
+                                        <button type="button" class="btn btn-danger delete-category"
+                                            data-id="{{ $category->id }}" data-name="{{ $category->category_name }}">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </td>
@@ -88,37 +85,36 @@
         </div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Deletion</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body text-center">
+                    <i class="fas fa-exclamation-circle fa-4x text-danger mb-3"></i>
+                    <h5 id="deleteCategoryText"></h5>
+                    <p class="text-muted">This action can be reversed (soft delete).</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-danger" id="confirmDelete">Delete</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
     <script>
         $(document).ready(function() {
 
-            // ADD / UPDATE CATEGORY
-            $('#categoryForm').submit(function(e) {
-                e.preventDefault();
-
-                let id = $('#category_id').val();
-                let url = id ? `/categories/${id}` : `/categories`;
-                let type = id ? 'PUT' : 'POST';
-
-                $.ajax({
-                    url: url,
-                    type: type,
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        name: $('#name').val()
-                    },
-                    success: function(res) {
-                        location.reload();
-                    },
-                    error: function(err) {
-                        $('.error-name').text(err.responseJSON.errors.name[0]);
-                    }
-                });
-            });
-
-            // EDIT
             $('.editBtn').click(function() {
                 $('#category_id').val($(this).data('id'));
                 $('#name').val($(this).data('name'));
@@ -126,20 +122,77 @@
                 $('#categoryModal').modal('show');
             });
 
-            // DELETE
-            $('.deleteBtn').click(function() {
-                if (!confirm('Are you sure?')) return;
-
-                let id = $(this).data('id');
+            $('#categoryForm').submit(function(e) {
+                e.preventDefault();
 
                 $.ajax({
-                    url: `/categories/${id}`,
+                    url: '/categories/save',
+                    type: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        id: $('#category_id').val(),
+                        name: $('#name').val()
+                    },
+                    success: function(res) {
+                        $('#categoryModal').modal('hide');
+                        toastr.success(res.message);
+
+                        setTimeout(() => location.reload(), 2000);
+                    },
+                    error: function(err) {
+                        if (err.status === 422) {
+                            toastr.error(err.responseJSON.message);
+                        } else {
+                            toastr.error('Something went wrong');
+                        }
+                    }
+                });
+            });
+
+            let categoryId = null;
+            let categoryName = null;
+            $('.delete-category').on('click', function() {
+                categoryId = $(this).data('id');
+                categoryName = $(this).data('name');
+
+                $('#deleteCategoryText').html(
+                    `Are you sure you want to delete <strong>${categoryName}</strong>?`
+                );
+
+                $('#deleteModal').modal('show');
+            });
+
+            $('#confirmDelete').on('click', function() {
+
+                let btn = $(this);
+
+                btn.html('<i class="fas fa-spinner fa-spin"></i> Deleting...')
+                    .prop('disabled', true);
+
+                $.ajax({
                     type: 'DELETE',
+                    url: `/categories/${categoryId}`,
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content')
                     },
-                    success: function() {
-                        $('#row-' + id).remove();
+                    success: function(res) {
+
+                        // Hide confirmation modal
+                        $('#deleteModal').modal('hide');
+
+                        // Show success toast
+                        toastr.success(res.message ?? 'Category deleted successfully');
+
+                        // Reload after 3 seconds
+                        setTimeout(function() {
+                            location.reload();
+                        }, 3000);
+                    },
+                    error: function() {
+                        toastr.error('Failed to delete category');
+                    },
+                    complete: function() {
+                        btn.html('Delete').prop('disabled', false);
                     }
                 });
             });

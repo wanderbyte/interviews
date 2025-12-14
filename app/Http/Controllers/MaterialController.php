@@ -5,71 +5,51 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Material;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class MaterialController extends Controller
 {
 
     public function index()
     {
-        $categories = Category::all();
+        $categories = Category::get();
         $materials = Material::with('category')->get();
 
         return view('materials.index', compact('materials', 'categories'));
     }
 
-    public function store(Request $request)
+    public function save(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        // Validate request data
+        $validated = $request->validate([
+            'id'              => 'nullable|exists:materials,id',
             'category_id'     => 'required|exists:categories,id',
-            'name'            => 'required|alpha_num',
-            'opening_balance' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/'
+            'material_name'   => 'required|string',
+            'opening_balance' => 'required|numeric'
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'errors' => $validator->errors()
-            ], 422);
+        // UPDATE
+        if (!empty($validated['id'])) {
+            $material = Material::find($validated['id']);
+            $material->category_id     = $validated['category_id'];
+            $material->material_name   = $validated['material_name'];
+            $material->opening_balance = $validated['opening_balance'];
+            $material->save();
+        }
+        // CREATE
+        else {
+            $material = Material::create([
+                'category_id'     => $validated['category_id'],
+                'material_name'   => $validated['material_name'],
+                'opening_balance' => $validated['opening_balance']
+            ]);
         }
 
-        $material = Material::create($request->only(
-            'category_id',
-            'name',
-            'opening_balance'
-        ));
-
         return response()->json([
-            'status' => true,
-            'message' => 'Material created successfully',
-            'data' => $material
-        ]);
-    }
-
-    public function update(Request $request, Material $material)
-    {
-        $validator = Validator::make($request->all(), [
-            'category_id'     => 'required|exists:categories,id',
-            'name'            => 'required|alpha_num',
-            'opening_balance' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $material->update($request->only(
-            'category_id',
-            'name',
-            'opening_balance'
-        ));
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Material updated successfully'
+            'status'  => true,
+            'message' => isset($validated['id'])
+                ? 'Material updated successfully'
+                : 'Material created successfully',
+            'data'    => $material
         ]);
     }
 

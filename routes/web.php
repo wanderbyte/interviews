@@ -13,8 +13,7 @@ Route::get('/', [HomeController::class, 'index'])->name('dashboard');
 |--------------------------------------------------------------------------
 */
 Route::get('/categories', [CategoryController::class, 'index']);
-Route::post('/categories', [CategoryController::class, 'store']);
-Route::put('/categories/{category}', [CategoryController::class, 'update']);
+Route::post('/categories/save', [CategoryController::class, 'save']);
 Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
 
 /*
@@ -23,8 +22,7 @@ Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
 |--------------------------------------------------------------------------
 */
 Route::get('/materials', [MaterialController::class, 'index']);
-Route::post('/materials', [MaterialController::class, 'store']);
-Route::put('/materials/{material}', [MaterialController::class, 'update']);
+Route::post('/materials/save', [MaterialController::class, 'save']);
 Route::delete('/materials/{material}', [MaterialController::class, 'destroy']);
 
 /*

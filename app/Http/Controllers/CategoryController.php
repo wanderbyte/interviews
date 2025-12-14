@@ -11,54 +11,34 @@ class CategoryController extends Controller
 
     public function index()
     {
-        $categories = Category::latest()->get();
+        $categories = Category::get();
         return view('categories.index', compact('categories'));
     }
 
-    public function store(Request $request)
+    public function save(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string'
+        // Validate request data
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'id'   => 'nullable|exists:categories,id'
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'errors' => $validator->errors()
-            ], 422);
+        if (!empty($validated['id'])) {
+            $category = Category::find($validated['id']);
+            $category->category_name = $validated['name'];
+            $category->save();
+        } else {
+            $category = Category::create([
+                'category_name' => $validated['name']
+            ]);
         }
 
-        $category = Category::create([
-            'name' => $request->name
-        ]);
-
         return response()->json([
-            'status' => true,
-            'message' => 'Category created successfully',
-            'data' => $category
-        ]);
-    }
-
-    public function update(Request $request, Category $category)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $category->update([
-            'name' => $request->name
-        ]);
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Category updated successfully'
+            'status'  => true,
+            'message' => isset($validated['id'])
+                ? 'Category updated successfully'
+                : 'Category created successfully',
+            'data'    => $category
         ]);
     }
 

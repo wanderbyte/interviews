@@ -1,5 +1,5 @@
         <!-- Footer -->
-        <footer class="sticky-footer bg-white">
+        <footer class="sticky-footer bg-gray-200">
             <div class="container my-auto">
                 <div class="copyright text-center my-auto">
                     <span>Copyright &copy; <a href="#" target="_blank">Pradeep Yadav.</a> {{ date('Y') }}</span>
@@ -49,12 +49,30 @@
 <!-- Page level plugins -->
 <script src="{{ asset('js/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('js/dataTables.bootstrap4.min.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
 
 @stack('scripts')
 
 <script>
-    setTimeout(function() {
-        $('.alert').slideUp();
-    }, 4000);
+    toastr.options = {
+        "closeButton": true,
+        "progressBar": true,
+        "positionClass": "toast-top-right",
+        "timeOut": "3000"
+    };
+    $(document).ready(function() {
+
+        $('#datatable').DataTable({
+            pageLength: 10,
+            lengthChange: true,
+            ordering: true,
+            searching: true,
+            responsive: true,
+            columnDefs: [{
+                orderable: false,
+                targets: -1
+            }]
+        });
+    });
 </script>
