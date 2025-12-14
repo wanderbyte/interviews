@@ -46,11 +46,7 @@
                     Material
                 </a>
 
-                <a class="collapse-item" href="{{ url('/material-transactions/create') }}">
-                    Inward / Outward
-                </a>
-
-                <a class="collapse-item" href="{{ url('/materials-manage') }}">
+                <a class="collapse-item" href="{{ url('/material-transactions') }}">
                     Manage Materials
                 </a>
             </div>

@@ -62,4 +62,14 @@ class MaterialController extends Controller
             'message' => 'Material deleted successfully'
         ]);
     }
+
+    public function getByCategory($categoryId)
+    {
+        $materials = Material::where('category_id', $categoryId)
+            ->select('id', 'material_name')
+            ->orderBy('material_name')
+            ->get();
+
+        return response()->json($materials);
+    }
 }

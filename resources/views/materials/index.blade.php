@@ -10,7 +10,7 @@
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Materials</h1>
-            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#materialModal">
+            <button class="btn btn-primary" data-toggle="modal" data-target="#materialModal">
                 <i class="fas fa-plus"></i> Add Material
             </button>
         </div>

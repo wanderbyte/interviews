@@ -24,10 +24,13 @@ Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
 Route::get('/materials', [MaterialController::class, 'index']);
 Route::post('/materials/save', [MaterialController::class, 'save']);
 Route::delete('/materials/{material}', [MaterialController::class, 'destroy']);
+Route::get('/materials/by-category/{categoryId}', [MaterialController::class, 'getByCategory']);
 
 /*
 |--------------------------------------------------------------------------
-| Inward / Outward Routes (AJAX)
+| Inward / Outward (Material Transactions)
 |--------------------------------------------------------------------------
 */
-Route::post('/material-transactions', [TransactionController::class, 'store']);
+Route::get('/material-transactions', [TransactionController::class, 'index']);
+Route::post('/material-transactions/save', [TransactionController::class, 'save']);
+Route::delete('/material-transactions/{id}', [TransactionController::class, 'destroy']);

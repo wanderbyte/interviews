@@ -28,7 +28,7 @@ class CategoryController extends Controller
             $category->save();
         } else {
             $category = Category::create([
-                'category_name' => $validated['name']
+                'category_name' => $validated['category_name']
             ]);
         }
 

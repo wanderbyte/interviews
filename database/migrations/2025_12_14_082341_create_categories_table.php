@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('category_name');
             $table->timestamps(); // created_at & updated_at
-            $table->softDeletes(); // deleted_at  soft delete column
+            // $table->softDeletes(); // deleted_at  soft delete column
         });
     }
 
