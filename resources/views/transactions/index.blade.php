@@ -105,8 +105,8 @@
 
                         <div class="form-group">
                             <label>Quantity (+ / -) <span class="text-danger">*</span></label>
-                            <input type="number" step="0.01" id="quantity" class="form-control"
-                                oninput="this.value=this.value.match(/^-?\d*(\.\d{0,2})?$/)?.[0]||this.value">
+                            <input type="text" id="quantity" class="form-control">
+                            <span class="text-danger error-balance"></span>
                         </div>
 
                     </div>
@@ -149,9 +149,6 @@
     <script>
         $(document).ready(function() {
 
-            /* ----------------------------------------------------------
-             |  Reset Modal on Close
-             ---------------------------------------------------------- */
             $('#transactionModal').on('hidden.bs.modal', function() {
                 $('#transactionForm')[0].reset();
                 $('#transaction_id').val('');
@@ -159,9 +156,25 @@
                 $('.modal-title').text('Add Inward / Outward');
             });
 
-            /* ----------------------------------------------------------
-             |  Category → Material Dependent Dropdown
-             ---------------------------------------------------------- */
+            $('#quantity').on('input', function() {
+                let value = $(this).val();
+
+                // Allow only numbers, one minus, and one dot
+                value = value.replace(/[^0-9.-]/g, '');
+
+                // Only one minus at the start
+                value = value.replace(/(?!^)-/g, '');
+
+                // Only one decimal point
+                if (value.indexOf('.') !== -1) {
+                    let parts = value.split('.');
+                    parts[1] = parts[1].slice(0, 2);
+                    value = parts[0] + '.' + parts[1];
+                }
+
+                $(this).val(value);
+            });
+
             $('#category_id').on('change', function() {
 
                 let categoryId = $(this).val();
@@ -199,9 +212,6 @@
                 });
             });
 
-            /* ----------------------------------------------------------
-             |  Save Inward / Outward Entry
-             ---------------------------------------------------------- */
             $('#transactionForm').on('submit', function(e) {
                 e.preventDefault();
 
@@ -230,9 +240,6 @@
                 });
             });
 
-            /* ----------------------------------------------------------
-            |  Edit Inward / Outward Entry
-            ---------------------------------------------------------- */
             $('.editBtn').on('click', function() {
 
                 let transactionId = $(this).data('id');
@@ -264,9 +271,6 @@
             });
 
 
-            /* ----------------------------------------------------------
-             |  Delete Entry
-             ---------------------------------------------------------- */
             let deleteId = null;
 
             $('.delete-entry').on('click', function() {
