@@ -60,11 +60,11 @@
                     Materials
                 </a>
 
-                <!-- NEW: Manage Materials -->
-                <a class="collapse-item {{ request()->is('manage-materials*') ? 'active' : '' }}"
+                <!-- Manage Materials -->
+                {{-- <a class="collapse-item {{ request()->is('manage-materials*') ? 'active' : '' }}"
                     href="{{ url('/manage-materials') }}">
                     Manage Materials
-                </a>
+                </a> --}}
 
                 <!-- Inward / Outward -->
                 <a class="collapse-item {{ request()->is('material-transactions*') ? 'active' : '' }}"
