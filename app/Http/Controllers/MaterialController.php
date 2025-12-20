@@ -27,26 +27,56 @@ class MaterialController extends Controller
             'opening_balance' => ['required', 'numeric', 'regex:/^\d+(\.\d{1,2})?$/']
         ]);
 
-        // UPDATE
         if (!empty($validated['id'])) {
-            $material = Material::find($validated['id']);
+
+            $material = Material::findOrFail($validated['id']);
+
+            $oldOpening   = $material->opening_balance;
+            $oldAvailable = $material->current_balance;
+            $newOpening   = $validated['opening_balance'];
+
+            $usedQuantity = $oldOpening - $oldAvailable;
+
+            // Prevent reducing below used quantity
+            if ($newOpening < $usedQuantity) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Opening balance cannot be less than used quantity'
+                ], 422);
+            }
+
+            // Case 1: No stock used → RESET available
+            if ($oldOpening == $oldAvailable) {
+                $material->current_balance = $newOpening;
+            }
+
+            // Case 2: Stock used → adjust only increment
+            else {
+                $difference = $newOpening - $oldOpening;
+
+                if ($difference > 0) {
+                    $material->current_balance += $difference;
+                }
+            }
+
             $material->category_id     = $validated['category_id'];
             $material->material_name   = $validated['material_name'];
-            $material->opening_balance = $validated['opening_balance'];
+            $material->opening_balance = $newOpening;
+
             $material->save();
-        }
-        // CREATE
-        else {
+        } else {
+
             $material = Material::create([
-                'category_id'     => $validated['category_id'],
-                'material_name'   => $validated['material_name'],
-                'opening_balance' => $validated['opening_balance']
+                'category_id'       => $validated['category_id'],
+                'material_name'     => $validated['material_name'],
+                'opening_balance'   => $validated['opening_balance'],
+                'current_balance' => $validated['opening_balance'],
             ]);
         }
 
         return response()->json([
             'status'  => true,
-            'message' => isset($validated['id'])
+            'message' => !empty($validated['id'])
                 ? 'Material updated successfully'
                 : 'Material created successfully',
             'data'    => $material
@@ -55,10 +85,27 @@ class MaterialController extends Controller
 
     public function destroy(Material $material)
     {
+        if ($material->transactions()->exists()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Cannot delete material. Inward/Outward entries exist.'
+            ], 422);
+        }
+
         $material->delete();
 
         return response()->json([
             'status' => true,
+            'message' => 'Material deleted successfully'
+        ]);
+    }
+
+    public function delete(Material $material)
+    {
+        $material->delete(); // soft delete
+
+        return response()->json([
+            'status'  => true,
             'message' => 'Material deleted successfully'
         ]);
     }

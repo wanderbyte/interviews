@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @push('title')
-    <title>Material Management | Interview Task</title>
+    <title>Materials List | Interview Task</title>
 @endpush
 
 @section('main-content')
@@ -10,12 +10,9 @@
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Materials</h1>
-            <button class="btn btn-primary" data-toggle="modal" data-target="#materialModal">
-                <i class="fas fa-plus"></i> Add Material
-            </button>
         </div>
 
-        <!-- Material Table -->
+        <!-- Materials Table -->
         <div class="card shadow mb-4">
             <div class="card-body">
                 <div class="table-responsive">
@@ -24,10 +21,9 @@
                             <tr>
                                 <th>#</th>
                                 <th>Category</th>
-                                <th>Material Name</th>
+                                <th>Material</th>
                                 <th>Opening Balance</th>
                                 <th>Current Balance</th>
-                                <th>Created At</th>
                                 <th width="120">Action</th>
                             </tr>
                         </thead>
@@ -37,17 +33,22 @@
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ $material->category->category_name }}</td>
                                     <td>{{ $material->material_name }}</td>
-                                    <td>{{ number_format($material->opening_balance, 2) }}</td>
-                                    <td>{{ number_format($material->current_balance, 2) }}</td>
-                                    <td>{{ $material->created_at->format('d M Y') }}</td>
+                                    <td>
+                                        <span class="font-weight-bold">
+                                            {{ number_format($material->opening_balance, 2) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="font-weight-bold">
+                                            {{ number_format($material->current_balance, 2) }}
+                                        </span>
+                                    </td>
                                     <td>
                                         <button class="btn btn-info editBtn" data-id="{{ $material->id }}"
                                             data-name="{{ $material->material_name }}"
-                                            data-category="{{ $material->category_id }}"
-                                            data-balance="{{ $material->opening_balance }}">
+                                            data-category="{{ $material->category_id }}">
                                             <i class="fas fa-edit"></i>
                                         </button>
-
                                         <button type="button" class="btn btn-danger delete-material"
                                             data-id="{{ $material->id }}" data-name="{{ $material->material_name }}">
                                             <i class="fas fa-trash"></i>
@@ -95,12 +96,6 @@
                             <label>Material Name <span class="text-danger">*</span></label>
                             <input type="text" id="material_name" class="form-control">
                             <span class="text-danger error-name"></span>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Opening Balance <span class="text-danger">*</span></label>
-                            <input type="number" step="0.01" id="opening_balance" class="form-control">
-                            <span class="text-danger error-balance"></span>
                         </div>
 
                     </div>
@@ -152,22 +147,11 @@
                 modal.find('.modal-title').text('Add Material');
             });
 
-            $('#opening_balance').on('input', function() {
-                let value = $(this).val();
-
-                if (value.includes('.')) {
-                    let parts = value.split('.');
-                    if (parts[1].length > 2) {
-                        $(this).val(parts[0] + '.' + parts[1].slice(0, 2));
-                    }
-                }
-            });
 
             $('.editBtn').click(function() {
                 $('#material_id').val($(this).data('id'));
                 $('#material_name').val($(this).data('name'));
                 $('#category_id').val($(this).data('category'));
-                $('#opening_balance').val($(this).data('balance'));
                 $('.modal-title').text('Edit Material');
                 $('#materialModal').modal('show');
             });
@@ -176,14 +160,14 @@
                 e.preventDefault();
 
                 $.ajax({
-                    url: '/materials/save',
+                    url: '/materials/update',
                     type: 'POST',
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content'),
                         id: $('#material_id').val(),
                         category_id: $('#category_id').val(),
-                        material_name: $('#material_name').val(),
-                        opening_balance: $('#opening_balance').val()
+                        material_name: $('#material_name').val()
+
                     },
                     success: function(res) {
                         $('#materialModal').modal('hide');
@@ -218,7 +202,7 @@
 
                 $.ajax({
                     type: 'DELETE',
-                    url: `/materials/${materialId}`,
+                    url: `/materials-delete/${materialId}`,
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content')
                     },

@@ -35,7 +35,7 @@
                                 <tr id="row-{{ $txn->id }}">
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ $txn->material->category->category_name }}</td>
-                                    <td>{{ $txn->material->material_name }}</td>
+                                    <td>{{ $txn->material->material_name ?? 'NA' }}</td>
                                     <td>{{ \Carbon\Carbon::parse($txn->transaction_date)->format('d M Y') }}</td>
                                     <td>
                                         <span class="{{ $txn->quantity < 0 ? 'text-danger' : 'text-success' }}">
@@ -45,8 +45,8 @@
 
                                     <td>
                                         <button class="btn btn-info editBtn" data-id="{{ $txn->id }}"
-                                            data-category="{{ $txn->material->category_id }}"
-                                            data-material="{{ $txn->material_id }}"
+                                            data-category="{{ $txn->material->category_id ?? '' }}"
+                                            data-material="{{ $txn->material_id ?? '' }}"
                                             data-date="{{ $txn->transaction_date }}" data-quantity="{{ $txn->quantity }}">
                                             <i class="fas fa-edit"></i>
                                         </button>
@@ -159,13 +159,9 @@
             $('#quantity').on('input', function() {
                 let value = $(this).val();
 
-                // Allow only numbers, one minus, and one dot
                 value = value.replace(/[^0-9.-]/g, '');
-
-                // Only one minus at the start
                 value = value.replace(/(?!^)-/g, '');
 
-                // Only one decimal point
                 if (value.indexOf('.') !== -1) {
                     let parts = value.split('.');
                     parts[1] = parts[1].slice(0, 2);
@@ -179,13 +175,14 @@
 
                 let categoryId = $(this).val();
                 let materialDropdown = $('#material_id');
-                materialDropdown.html('<option value="">Select Material</option>');
-
-                if (!categoryId) {
-                    return;
-                }
+                let selectedMaterial = materialDropdown.data('selected');
 
                 materialDropdown.html('<option>Loading...</option>');
+
+                if (!categoryId) {
+                    materialDropdown.html('<option value="">Select Material</option>');
+                    return;
+                }
 
                 $.ajax({
                     url: `/materials/by-category/${categoryId}`,
@@ -204,6 +201,12 @@
                         }
 
                         materialDropdown.html(options);
+
+                        // Set selected material AFTER options are loaded
+                        if (selectedMaterial) {
+                            materialDropdown.val(selectedMaterial);
+                            materialDropdown.removeData('selected');
+                        }
                     },
                     error: function() {
                         toastr.error('Failed to load materials');
@@ -248,28 +251,19 @@
                 let date = $(this).data('date');
                 let quantity = $(this).data('quantity');
 
-                // Set hidden ID
                 $('#transaction_id').val(transactionId);
-
-                // Set date & quantity
                 $('#transaction_date').val(date);
                 $('#quantity').val(quantity);
 
-                // Set category
+                // Store selected material temporarily
+                $('#material_id').data('selected', materialId);
+
+                // Trigger category change
                 $('#category_id').val(categoryId).trigger('change');
 
-                // Load materials and select correct one
-                setTimeout(function() {
-                    $('#material_id').val(materialId);
-                }, 300);
-
-                // Update modal title
                 $('.modal-title').text('Edit Inward / Outward');
-
-                // Show modal
                 $('#transactionModal').modal('show');
             });
-
 
             let deleteId = null;
 

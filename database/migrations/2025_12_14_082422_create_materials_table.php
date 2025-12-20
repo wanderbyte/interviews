@@ -16,8 +16,9 @@ return new class extends Migration
             $table->unsignedBigInteger('category_id');
             $table->string('material_name');
             $table->decimal('opening_balance', 10, 2);
+            $table->decimal('current_balance', 10, 2)->default(0);
             $table->timestamps(); // created_at & updated_at
-            // $table->softDeletes(); // deleted_at  soft delete column
+            $table->softDeletes(); // deleted_at  soft delete column
             $table->foreign('category_id')->references('id')->on('categories');
         });
     }

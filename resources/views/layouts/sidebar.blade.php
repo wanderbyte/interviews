@@ -27,7 +27,10 @@
 
     @php
         $inventoryActive =
-            request()->is('categories*') || request()->is('materials*') || request()->is('material-transactions*');
+            request()->is('categories*') ||
+            request()->is('materials*') ||
+            request()->is('manage-materials*') ||
+            request()->is('material-transactions*');
     @endphp
 
     <!-- Inventory Menu -->
@@ -35,24 +38,35 @@
         <a class="nav-link {{ $inventoryActive ? '' : 'collapsed' }}" href="#" data-toggle="collapse"
             data-target="#inventoryMenu" aria-expanded="{{ $inventoryActive ? 'true' : 'false' }}"
             aria-controls="inventoryMenu">
+
             <i class="fas fa-warehouse"></i>
             <span>Inventory</span>
         </a>
 
         <div id="inventoryMenu" class="collapse {{ $inventoryActive ? 'show' : '' }}" data-parent="#accordionSidebar">
+
             <div class="bg-white py-2 collapse-inner rounded">
                 <h6 class="collapse-header">Inventory Management:</h6>
 
+                <!-- Categories -->
                 <a class="collapse-item {{ request()->is('categories*') ? 'active' : '' }}"
                     href="{{ url('/categories') }}">
-                    Category
+                    Categories
                 </a>
 
+                <!-- Materials Master -->
                 <a class="collapse-item {{ request()->is('materials*') ? 'active' : '' }}"
                     href="{{ url('/materials') }}">
-                    Material
+                    Materials
                 </a>
 
+                <!-- NEW: Manage Materials -->
+                <a class="collapse-item {{ request()->is('manage-materials*') ? 'active' : '' }}"
+                    href="{{ url('/manage-materials') }}">
+                    Manage Materials
+                </a>
+
+                <!-- Inward / Outward -->
                 <a class="collapse-item {{ request()->is('material-transactions*') ? 'active' : '' }}"
                     href="{{ url('/material-transactions') }}">
                     Manage Inward-Outward

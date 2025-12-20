@@ -31,6 +31,10 @@ Route::get('/materials/by-category/{categoryId}', [MaterialController::class, 'g
 | Inward / Outward (Material Transactions)
 |--------------------------------------------------------------------------
 */
+Route::get('/manage-materials', [TransactionController::class, 'materials']);
+Route::post('/materials/update', [TransactionController::class, 'update']);
+Route::delete('/materials-delete/{material}', [MaterialController::class, 'delete']);
+
 Route::get('/material-transactions', [TransactionController::class, 'index']);
 Route::post('/material-transactions/save', [TransactionController::class, 'save']);
 Route::delete('/material-transactions/{id}', [TransactionController::class, 'destroy']);
