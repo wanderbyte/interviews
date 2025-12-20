@@ -34,8 +34,8 @@
                             @foreach ($transactions as $key => $txn)
                                 <tr id="row-{{ $txn->id }}">
                                     <td>{{ $key + 1 }}</td>
-                                    <td>{{ $txn->material->category->category_name }}</td>
-                                    <td>{{ $txn->material->material_name ?? 'NA' }}</td>
+                                    <td>{{ $txn->material->category->category_name ?? 'N/A' }}</td>
+                                    <td>{{ $txn->material->material_name ?? 'N/A' }}</td>
                                     <td>{{ \Carbon\Carbon::parse($txn->transaction_date)->format('d M Y') }}</td>
                                     <td>
                                         <span class="{{ $txn->quantity < 0 ? 'text-danger' : 'text-success' }}">

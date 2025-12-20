@@ -64,39 +64,52 @@ class TransactionController extends Controller
 
         return view('transactions.index', compact('categories', 'transactions'));
     }
+
     public function save(Request $request)
     {
         $validated = $request->validate([
             'id'               => 'nullable|exists:material_transactions,id',
             'material_id'      => 'required|exists:materials,id',
             'transaction_date' => 'required|date',
-            'quantity'         => ['required', 'numeric', 'regex:/^-?\d+(\.\d{1,2})?$/']
+            'quantity'         => ['required', 'numeric', 'not_in:0', 'regex:/^-?\d+(\.\d{1,2})?$/']
         ]);
 
         DB::beginTransaction();
 
         try {
-            $material = Material::lockForUpdate()->findOrFail($validated['material_id']);
+
             $newQty = $validated['quantity'];
 
             if (!empty($validated['id'])) {
 
                 $transaction = MaterialTransaction::findOrFail($validated['id']);
 
-                // Reverse old quantity
-                $material->current_balance -= $transaction->quantity;
+                // OLD material (can be soft deleted)
+                $oldMaterial = Material::withTrashed()
+                    ->lockForUpdate()
+                    ->findOrFail($transaction->material_id);
 
-                // Check stock after reversal
-                if ($material->current_balance + $newQty < 0) {
+                // Reverse stock from OLD material
+                $oldMaterial->current_balance -= $transaction->quantity;
+                $oldMaterial->save();
+
+                // NEW material
+                $newMaterial = Material::lockForUpdate()
+                    ->findOrFail($validated['material_id']);
+
+                // Check stock
+                if ($newMaterial->current_balance + $newQty < 0) {
                     return response()->json([
                         'status' => false,
                         'message' => 'Insufficient stock available'
                     ], 422);
                 }
 
-                // Apply new quantity
-                $material->current_balance += $newQty;
+                // Apply stock to NEW material
+                $newMaterial->current_balance += $newQty;
+                $newMaterial->save();
 
+                // Update transaction
                 $transaction->update([
                     'material_id'      => $validated['material_id'],
                     'transaction_date' => $validated['transaction_date'],
@@ -104,7 +117,9 @@ class TransactionController extends Controller
                 ]);
             } else {
 
-                // OUTWARD check
+                $material = Material::lockForUpdate()
+                    ->findOrFail($validated['material_id']);
+
                 if ($material->current_balance + $newQty < 0) {
                     return response()->json([
                         'status' => false,
@@ -113,6 +128,7 @@ class TransactionController extends Controller
                 }
 
                 $material->current_balance += $newQty;
+                $material->save();
 
                 $transaction = MaterialTransaction::create([
                     'material_id'      => $validated['material_id'],
@@ -121,7 +137,6 @@ class TransactionController extends Controller
                 ]);
             }
 
-            $material->save();
             DB::commit();
 
             return response()->json([
