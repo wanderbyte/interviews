@@ -22,6 +22,11 @@ class CityController extends Controller
         return District::where('state_id', $stateId)->get();
     }
 
+    public function cities($districtId)
+    {
+        return City::where('district_id', $districtId)->get();
+    }
+
     public function save(Request $request)
     {
         $validated = $request->validate([

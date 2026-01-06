@@ -60,4 +60,14 @@
         </div>
     </li>
 
+    <hr class="sidebar-divider">
+
+    <!-- Schools -->
+    <li class="nav-item {{ request()->routeIs('schools.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('schools.index') }}">
+            <i class="fas fa-school"></i>
+            <span>Schools</span>
+        </a>
+    </li>
+
 </ul>

@@ -148,7 +148,7 @@
                 $('#district_id').html('<option>Loading...</option>');
 
                 $.ajax({
-                    url: "{{ route('masters.districts.by-state', ':id') }}".replace(':id', stateId),
+                    url: "{{ route('masters.get.districts', ':id') }}".replace(':id', stateId),
                     type: "GET",
                     success: function(data) {
                         let options = '<option value="">Select District</option>';
