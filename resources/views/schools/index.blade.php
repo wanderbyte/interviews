@@ -18,6 +18,13 @@
 
         <!-- School Table -->
         <div class="card shadow mb-4">
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                </div>
+            @endif
+
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped table-hover" id="datatable">
