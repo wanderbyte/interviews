@@ -20,16 +20,44 @@
 
     <hr class="sidebar-divider">
 
-    <!-- Heading -->
-    <div class="sidebar-heading">
-        Masters
-    </div>
-
     <li class="nav-item">
-        <a class="nav-link" href="#" data-toggle="collapse" data-target="#masterMenu" aria-expanded="" aria-controls="masterMenu">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#masterMenu"
+            aria-expanded="false" aria-controls="masterMenu">
             <i class="fas fa-warehouse"></i>
             <span>Masters</span>
         </a>
+
+        <div id="masterMenu" class="collapse {{ request()->routeIs('masters.*') ? 'show' : '' }}"
+            aria-labelledby="headingMasters" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+                <h6 class="collapse-header">Master Management</h6>
+
+                <!-- Standards -->
+                <a class="collapse-item {{ request()->routeIs('masters.standards*') ? 'active' : '' }}"
+                    href="{{ route('masters.standards') }}">
+                    <i class="fas fa-layer-group mr-2"></i> Standards
+                </a>
+
+                <!-- States -->
+                <a class="collapse-item {{ request()->routeIs('masters.states*') ? 'active' : '' }}"
+                    href="{{ route('masters.states') }}">
+                    <i class="fas fa-map-marked-alt mr-2"></i> States
+                </a>
+
+                <!-- Districts -->
+                <a class="collapse-item {{ request()->routeIs('masters.districts*') ? 'active' : '' }}"
+                    href="{{ route('masters.districts.index') }}">
+                    <i class="fas fa-map mr-2"></i> Districts
+                </a>
+
+                <!-- Cities / Villages -->
+                <a class="collapse-item {{ request()->routeIs('masters.cities*') ? 'active' : '' }}"
+                    href="{{ route('masters.cities.index') }}">
+                    <i class="fas fa-city mr-2"></i> Cities / Villages
+                </a>
+
+            </div>
+        </div>
     </li>
 
 </ul>
